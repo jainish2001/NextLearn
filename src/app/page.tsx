@@ -113,7 +113,7 @@ export default function Home() {
             >
               <Card className="items-center bg-white/80 dark:bg-zinc-900/80 hover:scale-105 transition-transform">
                 <Image src={t.avatar} alt={t.name} width={64} height={64} className="rounded-full mb-2" />
-                <p className="italic text-gray-700 dark:text-gray-200 mb-2">"{t.text}"</p>
+                <p className="italic text-gray-700 dark:text-gray-200 mb-2">&quot;{t.text}&quot;</p>
                 <span className="font-semibold text-primary">{t.name}</span>
               </Card>
             </motion.div>
