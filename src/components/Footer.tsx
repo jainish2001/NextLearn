@@ -12,7 +12,7 @@ export default function Footer() {
       className="w-full py-8 px-6 md:px-12 bg-background border-t border-gray-200 dark:border-gray-800 mt-16"
     >
       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="text-lg font-bold text-primary">NextLearn</div>
+        <div className="text-lg font-bold text-primary">&copy;{" "}2025 NextLearn</div>
         <div className="flex gap-6 text-sm">
           <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
           <Link href="/terms" className="hover:underline">Terms of Service</Link>
