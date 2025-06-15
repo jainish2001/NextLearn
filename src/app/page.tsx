@@ -52,9 +52,6 @@ export default function Home() {
             <Button variant="primary" className="text-lg px-8 py-3 shadow-lg hover:scale-105 transition-transform" onClick={handleGetStarted}>
               Get Started
             </Button>
-            <Button variant="secondary" className="text-lg px-8 py-3 shadow-lg hover:scale-105 transition-transform" onClick={() => router.push("/courses")}>
-              Browse Courses
-            </Button>
           </div>
         </motion.div>
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/10 blur-2xl" />
