@@ -9,6 +9,9 @@ import Image from "next/image";
 import { AcademicCapIcon, DevicePhoneMobileIcon, CheckBadgeIcon, UserGroupIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 const icons = {
   AcademicCapIcon,
   DevicePhoneMobileIcon,
