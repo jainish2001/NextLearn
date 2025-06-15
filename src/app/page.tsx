@@ -143,6 +143,8 @@ export default function Home() {
           </Button>
         </motion.div>
       </section>
+      <Analytics />
+      <SpeedInsights />
     </div>
   );
 }
