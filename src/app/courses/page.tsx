@@ -16,7 +16,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@heroicons/react/24/outline";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import NoResults from "@/components/NoResults";
 
 const COURSES_PER_PAGE = 6;
