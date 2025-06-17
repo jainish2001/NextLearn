@@ -12,9 +12,8 @@ import {
   ChevronRightIcon,
   FunnelIcon,
   XMarkIcon,
-  ChevronUpDownIcon,
-  ChevronDownIcon,
   ChevronUpIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import { useSearchParams } from "next/navigation";
 import NoResults from "@/components/NoResults";
@@ -24,16 +23,6 @@ const COURSES_PER_PAGE = 6;
 // Extract unique values for filters
 const categories = Array.from(new Set(coursesData.map((c) => c.category))).sort();
 const levels = Array.from(new Set(coursesData.map((c) => c.level))).sort();
-
-// Sort options
-const sortOptions = [
-  { value: "title-asc", label: "Title (A-Z)" },
-  { value: "title-desc", label: "Title (Z-A)" },
-  { value: "duration-asc", label: "Duration (Shortest → Longest)" },
-  { value: "duration-desc", label: "Duration (Longest → Shortest)" },
-  { value: "level-asc", label: "Level (Beginner → Advanced)" },
-  { value: "level-desc", label: "Level (Advanced → Beginner)" },
-];
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -52,7 +41,6 @@ export default function CoursesPage() {
   const [selectedLevels, setSelectedLevels] = useState<string[]>(
     searchParams.get("levels")?.split(",") || []
   );
-  const [sort, setSort] = useState(searchParams.get("sort") || "title-asc");
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -68,24 +56,22 @@ export default function CoursesPage() {
     if (search) params.set("search", search);
     if (selectedCategories.length > 0) params.set("categories", selectedCategories.join(","));
     if (selectedLevels.length > 0) params.set("levels", selectedLevels.join(","));
-    if (sort !== "title-asc") params.set("sort", sort);
     if (currentPage > 1) params.set("page", currentPage.toString());
 
     const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
     window.history.pushState({}, "", newUrl);
-  }, [search, selectedCategories, selectedLevels, sort, currentPage]);
+  }, [search, selectedCategories, selectedLevels, currentPage]);
 
   // Check if any filter is active
   const hasActiveFilters = useMemo(() => {
     return (
       search !== "" ||
       selectedCategories.length > 0 ||
-      selectedLevels.length > 0 ||
-      sort !== "title-asc"
+      selectedLevels.length > 0
     );
-  }, [search, selectedCategories, selectedLevels, sort]);
+  }, [search, selectedCategories, selectedLevels]);
 
-  // Filter and sort courses
+  // Filter courses
   const filteredCourses = useMemo(() => {
     const filtered = coursesData.filter((course) => {
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
@@ -98,28 +84,8 @@ export default function CoursesPage() {
       return matchesCategory && matchesLevel && matchesSearch;
     });
 
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sort) {
-        case "title-asc":
-          return a.title.localeCompare(b.title);
-        case "title-desc":
-          return b.title.localeCompare(a.title);
-        case "duration-asc":
-          return a.duration.localeCompare(b.duration);
-        case "duration-desc":
-          return b.duration.localeCompare(a.duration);
-        case "level-asc":
-          return a.level.localeCompare(b.level);
-        case "level-desc":
-          return b.level.localeCompare(a.level);
-        default:
-          return 0;
-      }
-    });
-
     return filtered;
-  }, [search, selectedCategories, selectedLevels, sort]);
+  }, [search, selectedCategories, selectedLevels]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE);
@@ -160,16 +126,19 @@ export default function CoursesPage() {
     return rangeWithDots;
   };
 
+  // Toggle section expansion
+  const toggleSection = (section: "categories" | "levels") => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
   // Handle filter changes
   const handleFilterChange = (type: string, value: string) => {
     setCurrentPage(1);
-    switch (type) {
-      case "search":
-        setSearch(value);
-        break;
-      case "sort":
-        setSort(value);
-        break;
+    if (type === "search") {
+      setSearch(value);
     }
   };
 
@@ -196,16 +165,7 @@ export default function CoursesPage() {
     setSearch("");
     setSelectedCategories([]);
     setSelectedLevels([]);
-    setSort("title-asc");
     setCurrentPage(1);
-  };
-
-  // Toggle section expansion
-  const toggleSection = (section: "categories" | "levels") => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
   };
 
   // Prevent body scroll when mobile filter is open
@@ -237,35 +197,6 @@ export default function CoursesPage() {
             Filters
           </Button>
         </div>
-
-        {/* Search and Sort Bar */}
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              placeholder="Search courses..."
-              className="w-full px-4 py-2 pl-10 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
-              value={search}
-              onChange={(e) => handleFilterChange("search", e.target.value)}
-            />
-            <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-          </div>
-
-          <div className="w-full md:w-64 relative">
-            <select
-              className="w-full px-4 py-2 pl-3 pr-10 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/30 transition appearance-none"
-              value={sort}
-              onChange={(e) => handleFilterChange("sort", e.target.value)}
-            >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <ChevronUpDownIcon className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-          </div>
-        </div>
       </motion.section>
 
       {/* Main Content */}
@@ -277,6 +208,18 @@ export default function CoursesPage() {
           className="hidden md:block w-64 flex-shrink-0"
         >
           <div className="sticky top-8 bg-gray-50 dark:bg-zinc-900 rounded-xl p-4 space-y-6 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            {/* Search Bar */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search courses..."
+                className="w-full px-4 py-2 pl-10 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+                value={search}
+                onChange={(e) => handleFilterChange("search", e.target.value)}
+              />
+              <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            </div>
+
             {/* Clear Filters Button */}
             {hasActiveFilters && (
               <Button
@@ -288,6 +231,7 @@ export default function CoursesPage() {
                 Clear Filters
               </Button>
             )}
+
             {/* Categories Filter */}
             <div>
               <button
@@ -353,7 +297,6 @@ export default function CoursesPage() {
                 </div>
               )}
             </div>
-
           </div>
         </motion.aside>
 
@@ -388,6 +331,18 @@ export default function CoursesPage() {
                     >
                       <XMarkIcon className="w-6 h-6" />
                     </button>
+                  </div>
+
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search courses..."
+                      className="w-full px-4 py-2 pl-10 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+                      value={search}
+                      onChange={(e) => handleFilterChange("search", e.target.value)}
+                    />
+                    <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                   </div>
 
                   {/* Clear Filters Button */}
@@ -467,7 +422,6 @@ export default function CoursesPage() {
                       </div>
                     )}
                   </div>
-
                 </div>
               </motion.aside>
             </>
