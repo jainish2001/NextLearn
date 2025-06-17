@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motion";
 import { FaGithub, FaTwitter, FaEnvelope } from "react-icons/fa";
 import Link from "next/link";
 

@@ -1,4 +1,15 @@
-const courses = [
+export type Course = {
+  id: number;
+  title: string;
+  description: string;
+  instructor: string;
+  image: string;
+  category: string;
+  level: string;
+  duration: string;
+};
+
+const courses: Course[] = [
   // Web Development Courses
   {
     id: 1,

@@ -1,4 +1,4 @@
-const coursesData = require('./data/courses'); // Import the static data
+const coursesData = require('./src/data/courseinfo.json');
 
 /** @type {import('next-sitemap').IConfig} */
 const config = {
@@ -15,13 +15,21 @@ const config = {
       { loc: '/privacy', lastmod: new Date().toISOString() },
     ];
 
-    const coursePaths = coursesData.map((course) => ({
-      loc: `/courses/${course.slug}`,
-      lastmod: new Date().toISOString(),
-      changefreq: 'weekly',
-      priority: 0.8
-    }));
-
+    const coursePaths = coursesData.map((course) => {
+      // Create the slug based on the course ID and title
+      const slug = `${course.id}-${course.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric with hyphen
+        .replace(/(^-|-$)/g, '')}`;    // Remove leading/trailing hyphens
+    
+      return {
+        loc: `/courses/${slug}`,
+        lastmod: new Date().toISOString(),
+        changefreq: 'weekly',
+        priority: 0.8
+      };
+    });
+    
     return [...staticPaths, ...coursePaths];
   },
 };

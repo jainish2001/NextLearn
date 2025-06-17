@@ -37,7 +37,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     rafRef.current = requestAnimationFrame(updatePosition);
   }, [updateMask]);
 
-  // Update mouse position on move with throttling
+  // Update mouse position on move
   const handleMouseMove = useCallback((e: MouseEvent) => {
     mouseRef.current.x = e.clientX;
     mouseRef.current.y = e.clientY;
@@ -46,33 +46,10 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   // Handle visibility changes
   const handleVisibilityChange = useCallback(() => {
     isVisibleRef.current = !document.hidden;
-
-    if (!isVisibleRef.current) {
-      const grid = document.getElementById("grid-background");
-      if (grid) {
-        const hiddenMask = `radial-gradient(circle at 0 0, rgba(0,0,0,1) 0px, rgba(0,0,0,0) 0px)`;
-        grid.style.maskImage = hiddenMask;
-        (grid.style as CSSStyleDeclaration & { webkitMaskImage?: string }).webkitMaskImage = hiddenMask;
-      }
-    } else {
-      currentRef.current = { ...mouseRef.current };
-      updateMask(currentRef.current.x, currentRef.current.y);
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
-      rafRef.current = requestAnimationFrame(updatePosition);
-    }
-  }, [updateMask, updatePosition]);
-
-  // Handle window focus
-  const handleFocus = useCallback(() => {
-    currentRef.current = { ...mouseRef.current };
-    updateMask(currentRef.current.x, currentRef.current.y);
-    if (rafRef.current) {
+    if (!isVisibleRef.current && rafRef.current) {
       cancelAnimationFrame(rafRef.current);
     }
-    rafRef.current = requestAnimationFrame(updatePosition);
-  }, [updateMask, updatePosition]);
+  }, []);
 
   useEffect(() => {
     // Initialize position
@@ -87,9 +64,8 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     }
 
     // Event listeners
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("focus", handleFocus);
 
     // Start animation
     rafRef.current = requestAnimationFrame(updatePosition);
@@ -98,17 +74,20 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("focus", handleFocus);
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [handleMouseMove, handleVisibilityChange, handleFocus, updatePosition, updateMask]);
+  }, [handleMouseMove, handleVisibilityChange, updatePosition, updateMask]);
 
   return (
     <>
       {/* Dynamic background grid */}
-      <div id="grid-background" aria-hidden="true" />
+      <div 
+        id="grid-background" 
+        aria-hidden="true"
+        className="fixed inset-0 w-full h-full pointer-events-none"
+      />
 
       {/* Main content */}
       <div className="relative z-10">{children}</div>

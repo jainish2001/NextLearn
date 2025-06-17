@@ -1,6 +1,6 @@
 // Importing required modules and components
 import Link from "next/link"; // For navigation
-import { motion } from "framer-motion"; // For animation
+import { motion } from "@/lib/motion"; // For animation
 import Button from "@/components/Button"; // Reusable button component
 
 // Main NotFound page component

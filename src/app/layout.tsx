@@ -36,17 +36,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className="h-full">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}>
         {/* ClientLayout can be used for client-only logic (e.g. context providers, themes, etc.) */}
         <ClientLayout>
           {/* Main site wrapper with full height and column layout */}
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-screen flex flex-col relative">
             {/* Top navigation bar */}
             <Navbar />
             
             {/* Main content area with top padding to avoid overlapping Navbar */}
-            <main className="flex-1 pt-20">{children}</main>
+            <main className="flex-1 pt-20 relative z-10">{children}</main>
             
             {/* Footer displayed at the bottom of the page */}
             <Footer />

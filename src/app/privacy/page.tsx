@@ -1,6 +1,6 @@
 "use client"; // Enables client-side rendering and interactivity
 
-import { motion } from "framer-motion"; // Used for entry animations
+import { motion } from "@/lib/motion";
 
 // Privacy Policy page component
 export default function PrivacyPage() {

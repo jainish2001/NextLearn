@@ -1,6 +1,6 @@
 "use client"; // Marks the component as client-rendered for React interactivity
 
-import { motion } from "framer-motion"; // For animations
+import { motion } from "@/lib/motion"; // For animations
 import Button from "@/components/Button"; // Reusable button component
 import Card from "@/components/Card"; // Reusable card UI component
 import features from "@/data/features"; // Static features data

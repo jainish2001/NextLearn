@@ -1,6 +1,6 @@
 "use client"; // Ensures this component runs on the client side (required for motion animations)
 
-import { motion } from "framer-motion"; // For entry animations
+import { motion } from "@/lib/motion";
 
 // Terms of Service page component
 export default function TermsPage() {
