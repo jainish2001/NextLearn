@@ -1,17 +1,27 @@
-"use client";
+"use client"; // Marks the component as client-rendered for React interactivity
 
-import { motion } from "framer-motion";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import features from "@/data/features";
-import testimonials from "@/data/testimonials";
-import Image from "next/image";
-import { AcademicCapIcon, DevicePhoneMobileIcon, CheckBadgeIcon, UserGroupIcon } from "@heroicons/react/24/solid";
-import { useRouter } from "next/navigation";
+import { motion } from "framer-motion"; // For animations
+import Button from "@/components/Button"; // Reusable button component
+import Card from "@/components/Card"; // Reusable card UI component
+import features from "@/data/features"; // Static features data
+import testimonials from "@/data/testimonials"; // Static testimonials data
+import Image from "next/image"; // Optimized image handling
 
-import { Analytics } from "@vercel/analytics/next"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+// Heroicons (solid set)
+import {
+  AcademicCapIcon,
+  DevicePhoneMobileIcon,
+  CheckBadgeIcon,
+  UserGroupIcon,
+} from "@heroicons/react/24/solid";
 
+import { useRouter } from "next/navigation"; // Client-side navigation
+
+// Vercel analytics integrations
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
+// Icon mapping for dynamic rendering
 const icons = {
   AcademicCapIcon,
   DevicePhoneMobileIcon,
@@ -19,15 +29,18 @@ const icons = {
   UserGroupIcon,
 };
 
+// Simple fade animation config
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.5 }
 };
 
+// Home page component
 export default function Home() {
   const router = useRouter();
 
+  // Scroll to Features section
   const handleGetStarted = () => {
     const featuresSection = document.getElementById("features");
     if (featuresSection) {
@@ -37,6 +50,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-24">
+      
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center min-h-[80vh] pt-12 pb-20 px-4 text-center overflow-hidden">
         <motion.div
@@ -52,11 +66,17 @@ export default function Home() {
             Discover top courses, learn from experts, and join a thriving community. Your journey starts here.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="primary" className="text-lg px-8 py-3 shadow-lg hover:scale-105 transition-transform" onClick={handleGetStarted}>
+            <Button
+              variant="primary"
+              className="text-lg px-8 py-3 shadow-lg hover:scale-105 transition-transform"
+              onClick={handleGetStarted}
+            >
               Get Started
             </Button>
           </div>
         </motion.div>
+
+        {/* Background gradient effect */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/10 blur-2xl" />
       </section>
 
@@ -69,9 +89,11 @@ export default function Home() {
         >
           Why Choose Us?
         </motion.h2>
+
+        {/* Responsive grid of features */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {features.map((feature, index) => {
-            const Icon = icons[feature.icon as keyof typeof icons];
+            const Icon = icons[feature.icon as keyof typeof icons]; // Dynamically get icon component
             return (
               <motion.div
                 key={feature.title}
@@ -85,7 +107,9 @@ export default function Home() {
                     <Icon className="w-8 h-8" />
                   </div>
                   <h3 className="text-lg font-bold mb-1">{feature.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">{feature.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
+                    {feature.description}
+                  </p>
                 </Card>
               </motion.div>
             );
@@ -102,6 +126,8 @@ export default function Home() {
         >
           What Our Learners Say
         </motion.h2>
+
+        {/* Grid layout for testimonials */}
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((t, index) => (
             <motion.div
@@ -112,6 +138,8 @@ export default function Home() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <Card className="items-center bg-white/80 dark:bg-zinc-900/80 hover:scale-105 transition-transform">
+                
+                {/* User avatar with fallback */}
                 <Image
                   src={t.avatar}
                   alt={t.name}
@@ -119,6 +147,7 @@ export default function Home() {
                   height={64}
                   className="rounded-full mb-2 object-cover"
                   onError={(e) => {
+                    e.currentTarget.src = "../public/default-avatar.png";
                     const img = e.target as HTMLImageElement;
                     img.style.display = "none";
                     const altSpan = document.createElement("span");
@@ -127,7 +156,10 @@ export default function Home() {
                     img.parentElement?.appendChild(altSpan);
                   }}
                 />
-                <p className="italic text-gray-700 dark:text-gray-200 mb-2">&quot;{t.text}&quot;</p>
+                
+                <p className="italic text-gray-700 dark:text-gray-200 mb-2">
+                  &quot;{t.text}&quot;
+                </p>
                 <span className="font-semibold text-primary">{t.name}</span>
               </Card>
             </motion.div>
@@ -135,7 +167,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Call-to-Action Section */}
       <section className="flex flex-col items-center justify-center py-16 px-4 text-center">
         <motion.div
           {...fadeInUp}
@@ -151,12 +183,14 @@ export default function Home() {
           <Button 
             variant="secondary" 
             className="text-lg px-8 py-3 shadow-lg hover:scale-105 transition-transform"
-            onClick={() => router.push("/courses")}
+            onClick={() => router.push("/courses")} // Navigate to /courses page
           >
             Browse Courses
           </Button>
         </motion.div>
       </section>
+
+      {/* Analytics and Performance Insights */}
       <Analytics />
       <SpeedInsights />
     </div>
