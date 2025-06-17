@@ -42,7 +42,6 @@ const fadeInUp = {
 };
 
 export default function CoursesPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   
   // Initialize state from URL params
@@ -88,7 +87,7 @@ export default function CoursesPage() {
 
   // Filter and sort courses
   const filteredCourses = useMemo(() => {
-    let filtered = coursesData.filter((course) => {
+    const filtered = coursesData.filter((course) => {
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
       const matchesLevel = selectedLevels.length === 0 || selectedLevels.includes(course.level);
       const matchesSearch =
