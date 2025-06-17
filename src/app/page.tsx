@@ -6,6 +6,7 @@ import Card from "@/components/Card"; // Reusable card UI component
 import features from "@/data/features"; // Static features data
 import testimonials from "@/data/testimonials"; // Static testimonials data
 import Image from "next/image"; // Optimized image handling
+import React from "react";
 
 // Heroicons (solid set)
 import {
@@ -35,6 +36,43 @@ const fadeInUp = {
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.5 }
 };
+
+function TestimonialCard({ t, delay }: { t: typeof testimonials[0]; delay: number }) {
+  const [imgError, setImgError] = React.useState(false);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay }}
+    >
+      <Card className="items-center bg-white/80 dark:bg-zinc-900/80 hover:scale-105 transition-transform">
+        {imgError ? (
+          <Image
+            src="/default-avatar.png"
+            alt={t.name}
+            width={64}
+            height={64}
+            className="rounded-full mb-2 object-cover"
+          />
+        ) : (
+          <Image
+            src={t.avatar}
+            alt={t.name}
+            width={64}
+            height={64}
+            className="rounded-full mb-2 object-cover"
+            onError={() => setImgError(true)}
+          />
+        )}
+        <p className="italic text-gray-700 dark:text-gray-200 mb-2">
+          &quot;{t.text}&quot;
+        </p>
+        <span className="font-semibold text-primary">{t.name}</span>
+      </Card>
+    </motion.div>
+  );
+}
 
 // Home page component
 export default function Home() {
@@ -130,39 +168,7 @@ export default function Home() {
         {/* Grid layout for testimonials */}
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((t, index) => (
-            <motion.div
-              key={t.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="items-center bg-white/80 dark:bg-zinc-900/80 hover:scale-105 transition-transform">
-                
-                {/* User avatar with fallback */}
-                <Image
-                  src={t.avatar}
-                  alt={t.name}
-                  width={64}
-                  height={64}
-                  className="rounded-full mb-2 object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = "../public/default-avatar.png";
-                    const img = e.target as HTMLImageElement;
-                    img.style.display = "none";
-                    const altSpan = document.createElement("span");
-                    altSpan.innerText = t.name;
-                    altSpan.className = "italic text-gray-500";
-                    img.parentElement?.appendChild(altSpan);
-                  }}
-                />
-                
-                <p className="italic text-gray-700 dark:text-gray-200 mb-2">
-                  &quot;{t.text}&quot;
-                </p>
-                <span className="font-semibold text-primary">{t.name}</span>
-              </Card>
-            </motion.div>
+            <TestimonialCard key={t.name} t={t} delay={index * 0.1} />
           ))}
         </div>
       </section>
