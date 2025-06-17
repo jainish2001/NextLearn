@@ -1,3 +1,4 @@
+// app/courses/CoursesClient.tsx
 "use client";
 
 import coursesData from "@/data/courses";
@@ -20,7 +21,6 @@ import NoResults from "@/components/NoResults";
 
 const COURSES_PER_PAGE = 6;
 
-// Extract unique values for filters
 const categories = Array.from(new Set(coursesData.map((c) => c.category))).sort();
 const levels = Array.from(new Set(coursesData.map((c) => c.level))).sort();
 
@@ -30,10 +30,9 @@ const fadeInUp = {
   transition: { duration: 0.5 },
 };
 
-export default function CoursesPage() {
+export default function CoursesClient() {
   const searchParams = useSearchParams();
-  
-  // Initialize state from URL params
+
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     searchParams.get("categories")?.split(",") || []
@@ -43,8 +42,6 @@ export default function CoursesPage() {
   );
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
-  // Add state for collapsible sections
   const [expandedSections, setExpandedSections] = useState({
     categories: true,
     levels: true,

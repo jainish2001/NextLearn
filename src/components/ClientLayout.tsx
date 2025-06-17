@@ -1,95 +1,116 @@
 "use client";
 
-import { useEffect, ReactNode } from "react";
+import { useEffect, ReactNode, useCallback, useRef } from "react";
 
 // Layout component that adds a dynamic spotlight effect to the background
 export default function ClientLayout({ children }: { children: ReactNode }) {
+  const rafRef = useRef<number | null>(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const currentRef = useRef({ x: 0, y: 0 });
+  const isVisibleRef = useRef(true);
+
   useEffect(() => {
+    isVisibleRef.current = !document.hidden;
+  }, []);
+
+
+  // Generate radial mask based on current mouse position
+  const updateMask = useCallback((x: number, y: number) => {
     const grid = document.getElementById("grid-background");
     if (!grid) return;
 
-    // Track mouse and animation positions
-    let mouseX = 0;
-    let mouseY = 0;
-    let currentX = 0;
-    let currentY = 0;
+    const mask = `radial-gradient(circle 200px at ${x}px ${y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)`;
+    grid.style.maskImage = mask;
+    (grid.style as CSSStyleDeclaration & { webkitMaskImage?: string }).webkitMaskImage = mask;
+  }, []);
+
+  // Animate spotlight to follow mouse with easing
+  const updatePosition = useCallback(() => {
     const speed = 0.1;
-    let rafId: number;
-    let isVisible = !document.hidden;
+    currentRef.current.x += (mouseRef.current.x - currentRef.current.x) * speed;
+    currentRef.current.y += (mouseRef.current.y - currentRef.current.y) * speed;
 
-    // Generate radial mask based on current mouse position
-    const updateMask = (x: number, y: number) => {
-      const mask = `radial-gradient(circle 150px at ${x}px ${y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)`;
+    if (isVisibleRef.current) {
+      updateMask(currentRef.current.x, currentRef.current.y);
+    }
 
-      grid.style.maskImage = mask;
+    rafRef.current = requestAnimationFrame(updatePosition);
+  }, [updateMask]);
 
-      // Apply deprecated WebKit-specific mask for Safari support using safe typing
-      (grid.style as CSSStyleDeclaration & { webkitMaskImage?: string }).webkitMaskImage = mask;
-    };
+  // Update mouse position on move with throttling
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    mouseRef.current.x = e.clientX;
+    mouseRef.current.y = e.clientY;
+  }, []);
 
-    // Animate spotlight to follow mouse with easing
-    const updatePosition = () => {
-      currentX += (mouseX - currentX) * speed;
-      currentY += (mouseY - currentY) * speed;
+  // Handle visibility changes
+  const handleVisibilityChange = useCallback(() => {
+    isVisibleRef.current = !document.hidden;
 
-      if (isVisible) updateMask(currentX, currentY);
-
-      rafId = requestAnimationFrame(updatePosition);
-    };
-
-    // Update mouse position on move
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    // Pause animation and hide mask when tab is not visible
-    const handleVisibilityChange = () => {
-      isVisible = !document.hidden;
-
-      if (!isVisible) {
+    if (!isVisibleRef.current) {
+      const grid = document.getElementById("grid-background");
+      if (grid) {
         const hiddenMask = `radial-gradient(circle at 0 0, rgba(0,0,0,1) 0px, rgba(0,0,0,0) 0px)`;
         grid.style.maskImage = hiddenMask;
         (grid.style as CSSStyleDeclaration & { webkitMaskImage?: string }).webkitMaskImage = hiddenMask;
-      } else {
-        currentX = mouseX;
-        currentY = mouseY;
-        updateMask(currentX, currentY);
-        cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(updatePosition);
       }
-    };
+    } else {
+      currentRef.current = { ...mouseRef.current };
+      updateMask(currentRef.current.x, currentRef.current.y);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      rafRef.current = requestAnimationFrame(updatePosition);
+    }
+  }, [updateMask, updatePosition]);
 
-    // Handle spotlight reactivation on window focus
-    const handleFocus = () => {
-      currentX = mouseX;
-      currentY = mouseY;
-      updateMask(currentX, currentY);
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(updatePosition);
-    };
+  // Handle window focus
+  const handleFocus = useCallback(() => {
+    currentRef.current = { ...mouseRef.current };
+    updateMask(currentRef.current.x, currentRef.current.y);
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+    }
+    rafRef.current = requestAnimationFrame(updatePosition);
+  }, [updateMask, updatePosition]);
+
+  useEffect(() => {
+    // Initialize position
+    const grid = document.getElementById("grid-background");
+    if (grid) {
+      const rect = grid.getBoundingClientRect();
+      currentRef.current = {
+        x: rect.width / 2,
+        y: rect.height / 2
+      };
+      updateMask(currentRef.current.x, currentRef.current.y);
+    }
 
     // Event listeners
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleFocus);
-    rafId = requestAnimationFrame(updatePosition);
 
-    // Cleanup on unmount
+    // Start animation
+    rafRef.current = requestAnimationFrame(updatePosition);
+
+    // Cleanup
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
-      cancelAnimationFrame(rafId);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
-  }, []);
+  }, [handleMouseMove, handleVisibilityChange, handleFocus, updatePosition, updateMask]);
 
   return (
     <>
-      {/* This is the dynamic background grid being masked */}
-      <div id="grid-background" />
+      {/* Dynamic background grid */}
+      <div id="grid-background" aria-hidden="true" />
 
-      {/* Children content layered on top of the animated background */}
+      {/* Main content */}
       <div className="relative z-10">{children}</div>
     </>
   );
