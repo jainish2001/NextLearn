@@ -77,7 +77,7 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
 
       {/* Course Content */}
       <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">📘 Course Overview</h2>
+        <h2 className="text-2xl font-bold mb-4">Course Overview</h2>
         <div className="prose dark:prose-invert max-w-none">
           <p>
             <strong>This comprehensive course</strong> is designed to take you from{" "}
@@ -86,16 +86,16 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
             experience through real-world projects and hands-on activities.
           </p>
           <br />
-          <h3>🎯 What You&apos;ll Learn</h3>
+          <h3><strong>What You&apos;ll Learn</strong></h3>
           <ul>
-            <li><strong>Core fundamentals</strong> of {course.category}</li>
-            <li><strong>Project-based learning</strong> with real-world examples</li>
-            <li>Best practices and industry <em>standards</em></li>
-            <li>Hands-on experience with practical <strong>exercises</strong></li>
-            <li>Development of a <em>professional portfolio</em></li>
+            <li className="list-disc ml-5"><strong>Core fundamentals</strong> of {course.category}</li>
+            <li className="list-disc ml-5"><strong>Project-based learning</strong> with real-world examples</li>
+            <li className="list-disc ml-5">Best practices and industry <em>standards</em></li>
+            <li className="list-disc ml-5">Hands-on experience with practical <strong>exercises</strong></li>
+            <li className="list-disc ml-5">Development of a <em>professional portfolio</em></li>
           </ul>
           <br />
-          <h3>📅 Course Structure</h3>
+          <h3><strong>Course Structure</strong></h3>
           <p>
             Structured across <strong>{course.duration}</strong> of focused learning,
             this course guides you through a weekly progression from foundational concepts
@@ -103,12 +103,12 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
             <strong>{course.category.toLowerCase()}</strong>.
           </p>
           <ul>
-            <li><strong>Week-by-week learning path</strong></li>
-            <li>Interactive assignments and challenges</li>
-            <li>Community and instructor feedback</li>
+            <li className="list-disc ml-5"><strong>Week-by-week learning path</strong></li>
+            <li className="list-disc ml-5">Interactive assignments and challenges</li>
+            <li className="list-disc ml-5">Community and instructor feedback</li>
           </ul>
           <br />
-          <h3>✅ Prerequisites</h3>
+          <h3><strong>Prerequisites</strong></h3>
           <p>
             This is a <strong>{course.level}</strong> level course, intended for{" "}
             {course.level === "Beginner"

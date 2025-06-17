@@ -47,15 +47,26 @@ body {
   background-color: transparent;
 
   /* Enhanced grid pattern with better contrast */
-  background-image:
-    linear-gradient(90deg, rgba(128, 128, 128, 0.1) 1px, transparent 1px),
+  background-image: linear-gradient(
+      90deg,
+      rgba(128, 128, 128, 0.1) 1px,
+      transparent 1px
+    ),
     linear-gradient(rgba(128, 128, 128, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
   background-position: center center;
 
   /* Initial mask state */
-  mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
   mask-size: 100% 100%;
   -webkit-mask-size: 100% 100%;
   mask-repeat: no-repeat;
@@ -71,15 +82,18 @@ body {
 @media (prefers-color-scheme: dark) {
   #grid-background {
     opacity: 0.2;
-    background-image:
-      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    background-image: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 1px,
+        transparent 1px
+      ),
       linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   }
 }
 
 /* Add subtle gradient overlay */
 #grid-background::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;

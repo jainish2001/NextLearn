@@ -23,8 +23,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       className={clsx(
         "px-6 py-2 rounded-xl font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-primary/60",
         variant === "primary"
-          ? "bg-primary text-white hover:bg-primary/90"
-          : "bg-secondary text-white hover:bg-secondary/90",
+          ? "bg-primary text-black dark:text-white hover:bg-primary/90"
+          : "bg-secondary text-black dark:text-white hover:bg-secondary/90",
         className
       )}
       {...props}
