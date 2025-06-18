@@ -1,95 +1,99 @@
 "use client";
 
-import { useEffect, ReactNode, useCallback, useRef } from "react";
+import { useEffect, ReactNode } from "react";
 
-// Layout component that adds a dynamic spotlight effect to the background
 export default function ClientLayout({ children }: { children: ReactNode }) {
-  const rafRef = useRef<number | null>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
-  const currentRef = useRef({ x: 0, y: 0 });
-  const isVisibleRef = useRef(true);
-
   useEffect(() => {
-    isVisibleRef.current = !document.hidden;
-  }, []);
-
-
-  // Generate radial mask based on current mouse position
-  const updateMask = useCallback((x: number, y: number) => {
     const grid = document.getElementById("grid-background");
     if (!grid) return;
 
-    const mask = `radial-gradient(circle 200px at ${x}px ${y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)`;
-    grid.style.maskImage = mask;
-    (grid.style as CSSStyleDeclaration & { webkitMaskImage?: string }).webkitMaskImage = mask;
-  }, []);
-
-  // Animate spotlight to follow mouse with easing
-  const updatePosition = useCallback(() => {
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
     const speed = 0.1;
-    currentRef.current.x += (mouseRef.current.x - currentRef.current.x) * speed;
-    currentRef.current.y += (mouseRef.current.y - currentRef.current.y) * speed;
+    let rafId: number;
+    let isVisible = !document.hidden;
+    let lastMoveTime = Date.now();
 
-    if (isVisibleRef.current) {
-      updateMask(currentRef.current.x, currentRef.current.y);
-    }
+    const setWebkitMask = (value: string) => {
+      (grid.style as CSSStyleDeclaration & { webkitMaskImage?: string }).webkitMaskImage = value;
+    };
 
-    rafRef.current = requestAnimationFrame(updatePosition);
-  }, [updateMask]);
+    const updateMask = (x: number, y: number) => {
+      const mask = `radial-gradient(circle 150px at ${x}px ${y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)`;
+      grid.style.maskImage = mask;
+      setWebkitMask(mask);
+      grid.style.opacity = "1";
+    };
 
-  // Update mouse position on move
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    mouseRef.current.x = e.clientX;
-    mouseRef.current.y = e.clientY;
-  }, []);
+    const hideMask = () => {
+      grid.style.opacity = "0";
+    };
 
-  // Handle visibility changes
-  const handleVisibilityChange = useCallback(() => {
-    isVisibleRef.current = !document.hidden;
-    if (!isVisibleRef.current && rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-    }
-  }, []);
+    const updatePosition = () => {
+      currentX += (mouseX - currentX) * speed;
+      currentY += (mouseY - currentY) * speed;
 
-  useEffect(() => {
-    // Initialize position
-    const grid = document.getElementById("grid-background");
-    if (grid) {
-      const rect = grid.getBoundingClientRect();
-      currentRef.current = {
-        x: rect.width / 2,
-        y: rect.height / 2
-      };
-      updateMask(currentRef.current.x, currentRef.current.y);
-    }
+      const now = Date.now();
+      const idleTime = now - lastMoveTime;
 
-    // Event listeners
-    window.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+      if (isVisible && idleTime < 300) {
+        updateMask(currentX, currentY);
+      } else {
+        hideMask();
+      }
 
-    // Start animation
-    rafRef.current = requestAnimationFrame(updatePosition);
+      rafId = requestAnimationFrame(updatePosition);
+    };
 
-    // Cleanup
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      lastMoveTime = Date.now();
+    };
+
+    const handleMouseLeave = () => {
+      hideMask();
+    };
+
+    const handleVisibilityChange = () => {
+      isVisible = !document.hidden;
+      if (!isVisible) {
+        hideMask();
+      } else {
+        currentX = mouseX;
+        currentY = mouseY;
+        updateMask(currentX, currentY);
       }
     };
-  }, [handleMouseMove, handleVisibilityChange, updatePosition, updateMask]);
+
+    const handleFocus = () => {
+      currentX = mouseX;
+      currentY = mouseY;
+      updateMask(currentX, currentY);
+    };
+
+    // Attach listeners
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    rafId = requestAnimationFrame(updatePosition);
+
+    // Cleanup on unmount
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   return (
     <>
-      {/* Dynamic background grid */}
-      <div 
-        id="grid-background" 
-        aria-hidden="true"
-        className="fixed inset-0 w-full h-full pointer-events-none"
-      />
-
-      {/* Main content */}
+      <div id="grid-background" />
       <div className="relative z-10">{children}</div>
     </>
   );
