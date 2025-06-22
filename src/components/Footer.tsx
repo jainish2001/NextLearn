@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "@/lib/motion";
-import { FaGithub, FaTwitter, FaEnvelope } from "react-icons/fa";
+import { FaGithub, FaEnvelope, FaLinkedin } from "react-icons/fa";
 import Link from "next/link";
 
 // Footer component that appears at the bottom of all pages
@@ -32,13 +32,13 @@ export default function Footer() {
 
         {/* Social & Contact Icons */}
         <div className="flex gap-4 text-xl text-secondary">
-          <a href="mailto:info@nextlearn.com" className="hover:text-primary transition-colors" aria-label="Email">
+          <a href="mailto:jainishjain2001@gmail.com" className="hover:text-primary transition-colors" aria-label="Email">
             <FaEnvelope />
           </a>
-          <a href="#" className="hover:text-primary transition-colors" aria-label="Twitter">
-            <FaTwitter />
+          <a href="https://www.linkedin.com/in/jainish2001/" className="hover:text-primary transition-colors" aria-label="LinkedIn">
+            <FaLinkedin />
           </a>
-          <a href="#" className="hover:text-primary transition-colors"  aria-label="GitHub">
+          <a href="https://github.com/jainish2001" className="hover:text-primary transition-colors"  aria-label="GitHub">
             <FaGithub />
           </a>
         </div>

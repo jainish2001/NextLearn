@@ -7,6 +7,7 @@ import features from "@/data/features"; // Static features data
 import testimonials from "@/data/testimonials"; // Static testimonials data
 import Image from "next/image"; // Optimized image handling
 import React from "react";
+import Link from "next/link";
 
 // Heroicons (solid set)
 import {
@@ -97,8 +98,8 @@ export default function Home() {
           transition={{ duration: 0.8 }}
           className="z-10 max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-6">
-            Unlock Your Potential with <span className="underline decoration-accent">NextLearn</span>
+          <h1 className="text-4xl md:text-4l font-extrabold text-black dark:text-white from-primary via-secondary to-accent bg-clip-text text-transparent mb-6">
+            Unlock Your Potential with <span className="underline decoration-accent"><Link href="/" >NextLearn</Link></span>
           </h1>
           <p className="text-lg md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             Discover top courses, learn from experts, and join a thriving community. Your journey starts here.

@@ -19,7 +19,7 @@ export default function CourseDetails({ course }: CourseDetailsProps) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Course Image */}
-        <div className="relative h-[400px] rounded-xl overflow-hidden">
+        <div className="relative h-[400px] rounded-xl overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
           <Image
             src={course.image}
             alt={course.title}
